@@ -1,4 +1,3 @@
-# TrustworthyCPI
 # TrustworthyCPI: Trustworthy Compound–Protein Interaction Prediction
 
 This code is an implementation of our paper
