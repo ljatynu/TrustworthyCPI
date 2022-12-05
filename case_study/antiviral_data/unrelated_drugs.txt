@@ -1,0 +1,3 @@
+"Amoxicillin" 2171 CC1(C(N2C(S1)C(C2=O)NC(=O)C(C3=CC=C(C=C3)O)N)C(=O)O)C
+"Penicillin" 517573 CC1(C(N2C(S1)C(C2=O)NC(=O)CC3=CC=CC=C3)C(=O)[O-])C.[K+]
+"Aspirin" 2244 CC(=O)OC1=CC=CC=C1C(=O)O
