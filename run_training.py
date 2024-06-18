@@ -14,7 +14,7 @@ if __name__ == '__main__':
     torch.cuda.manual_seed_all(222)
     np.random.seed(222)
     parser = argparse.ArgumentParser()
-    parser.add_argument("--mode", type=str, default='train')
+    parser.add_argument("--dataset", type=str, default="Human", help="name of dataset", choices=['Human', 'Celegans'])
     parser.add_argument(
         "--num_classes", default=2, type=int, help="num_classes."
     )
@@ -43,17 +43,17 @@ if __name__ == '__main__':
     accuracy = {"accuracy": [], "phase": [], "epoch": []}
 
 
-    train_data = HumanData(url='data/HumanByStr', mode='train')
+    if args.dataset == "Human":
+        train_data = HumanData(url='data/{}ByStr'.format(args.dataset), mode='train')
+        test_data = HumanData(url='data/{}ByStr'.format(args.dataset), mode='test')
+    elif args.dataset == "Celegans":
+        train_data = CelegansData(url='data/{}ByStr'.format(args.dataset), mode='1to1_train')
+        test_data = CelegansData(url='data/{}ByStr'.format(args.dataset), mode='test')
+    else:
+        raise ValueError("Invalid dataset name")
+
     train_dataloader = DataLoader(train_data, batch_size=12, shuffle=True)
-
-    test_data = HumanData(url='data/HumanByStr', mode='test')
     test_dataloader = DataLoader(test_data, batch_size=12, shuffle=True)
-
-    # train_data = CelegansData(url='data/CelegansByStr', mode='1to1_train')
-    # train_dataloader = DataLoader(train_data, batch_size=12, shuffle=True)
-    #
-    # test_data = CelegansData(url='data/CelegansByStr', mode='test')
-    # test_dataloader = DataLoader(test_data, batch_size=12, shuffle=True)
 
     dataLoaders = {
         "train": train_dataloader,
@@ -114,4 +114,4 @@ if __name__ == '__main__':
 
             if phase == "val" and epoch_acc > best_acc:
                 best_acc = epoch_acc
-                torch.save(model, 'results/Human_model.pth')
+                torch.save(model, 'results/{}_model.pth'.format(args.dataset))

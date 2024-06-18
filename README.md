@@ -5,31 +5,76 @@ This code is an implementation of our paper
 Human and C.elegans created by
 "[Improving compound–protein interaction prediction by building up highly credible negative samples (Bioinformatics, 2015).](https://academic.oup.com/bioinformatics/article/31/12/i221/216307)"
 
-In our problem setting of TrustworthyCPI prediction, the input of our model is the pair of a SMILES format of compound and an
-amino acid sequence of protein and the outputs are not only a binary prediction result interaction but also the the confidence level of
-prediction result. The overview of our **TrustworthyCPI Model** is as follows:
-![Alt](Figures/The_framework%20_of%20_TrustworthyCPI.jpg)
+In our problem setting of TrustworthyCPI prediction, the input of our model is the pair of a SMILES format of compound
+and an amino acid sequence of protein and the outputs are not only a binary prediction result interaction but also the
+the confidence level of prediction result. The overview of our **TrustworthyCPI Model** is as follows:
+![Alt](figures/framwork_of_TrustworthyCPI.JPG)
 
 The details of the TrustworthyCPI Model are described in our paper.
+
 ## Characteristics of the repository
 
-- We provide the **several demo-scripts** of the experiments in the paper, so that you can quickly understand the trustworthy
+- We provide the **several demo-scripts** of the experiments in the paper, so that you can quickly understand the
+  trustworthy
   prediction process of the TrustworthyCPI model.
-- This code is **easy to use**. It means that you can customize your own dataset and train your own TrustworthyCPI prediction
+- This code is **easy to use**. It means that you can customize your own dataset and train your own TrustworthyCPI
+  prediction
   model, and apply it to the new "trustworthy drug discovery" scenario.
 - We provide **several pre-training models** on Human and C.elegans datasets for your further researches.
 
+## Table of contents
+
+- [Requirements](#requirements)
+- [Data Preparation](#data-preparation)
+- [(a) Case Study](#a-case-study-trustworthy-drug-discovery-on-sars-cov2-3clpro)
+- [(b) Uncertainty estimation](#b-uncertainty-estimation)
+- [(c) OOD (Out-Of-Distribution) Detection](#c-ood-out-of-distribution-detection)
+- [(d) Parameters Selection](#d-parameters-selection)
+- [(e) Training on Human and C.elegans Benchmark](#e-training-of-trustworthycpi-model-on-benchmark-datasets-in-an-end-to-end-manner)
+- [(f) Training using customized CPI dataset](#f-Training-of-TrustworthyCPI-Model-using-your-customized-CPI-dataset-and-make-trustworthy-drug-discovery)
+
 ## Requirements
 
-- Pytorch 1.10.0
-- Numpy 1.19.2
-- Scikit-learn 0.24.2
-- RDKit 2020.09.1.0
+- torch==1.10.0
+- Numpy==1.21.5
+- Scikit-learn==1.0.2
+- RDKit==2020.09.1.0
+- setuptools==65.4.0
 
-## (a) Case Study
+## Data Preparation
 
-- Run the script **"case_study/drugs_trustworthy_predict.py"** for trustworthy drug discovery on SARS CoV2 3CLPro (
-  For the detailed description of this experiment, please refer to **4.6 Case Study** in the paper):
+Due to the large size of the pre-processed dataset (~420MB), we have stored
+it [here](https://drive.google.com/file/d/1lE0fE0RTqP3ThxVorPhA9FMP9ZR6WiOC/view?usp=drive_link). Please download this
+zip file and extract it to the main directory as the `/data` folder.
+
+- The explanation for the file directory:
+    - The Human and C.elegans datasets are respectively saved in the `/CelegansByStr` and `/Human` directories.
+    - `data.txt` contains the SMILES sequences and their labels from the original dataset.
+    - `train.txt` and `test.txt` are random divisions of the dataset (Each of them has a ratio of pos:Neg = 1:5).
+    - `train_IndexVec_data.npy` (training set) and `train_IndexVec_data.npy` (testing set) store the pre-processed
+      Encoding Vector of C-P pairs (please refer to **Section 3.2 Convolutional Representation Learning** in the paper).
+    - The source code for data preprocessing can be found in
+      script [data_preprocess.py](data%2FCelegansByStr%2Fdata_preprocess.py).
+
+## (a) Case Study (Trustworthy drug discovery on SARS CoV2 3CLPro)
+
+**This script employs TrustworthyCPI to predict the SARS-CoV2 3CPro Protease and its existing 85 drugs, including 82
+antiviral drugs and 3 unrelated drugs.**
+
+(For the detailed description of this experiment, please refer to **4.7 Case Study** in the paper.)
+
+- Run the script [drugs_trustworthy_predict.py](case_study/drugs_trustworthy_predict.py) for trustworthy drug discovery
+  on SARS CoV2 3CLPro.
+- Description of the `case_study` file directory:
+    - Antiviral drugs are stored in `antiviral_data/antiviral_drugs.txt`
+    - Unrelated drugs are stored in `antiviral_data/unrelated_drugs.txt`.
+    - One can also download the original antiviral drugs and unrelated ones using the
+      script [load_antiviral_drugs.py](case_study%2Fload_antiviral_drugs.py).
+    - We have combined all SMILES sequences of drugs and amino acid sequences of SARS-CoV2 3CPro Protease in the
+      file `antiviral_data/existing_drugs_3CLPro_pair.txt`, and then transformed them into Encoding Vectors using
+      the [data_helper.py](case_study/data_helper.py) script (please refer to "Section 3.2 Convolutional Representation
+      Learning" of the paper).
+    - A TrustworthyCPI model trained on the full C.elegans dataset is stored in `model_trained_on_Celegans.pth`.
 
 <details>
   <summary>Click here for the results!</summary>
@@ -132,9 +177,24 @@ Trustworthy Drug Discovery Result for SARS-CoV2 3CL Protease
 
 ## (b) Uncertainty estimation
 
-- Run the script **"uncertainty_estimation_expirement/uncertainty_evaluation.py"** to filter out the trustworthy
-  prediction datapoints and and only give the prediction results for them (For the detailed description of this
-  experiment, please refer to **4.4 Uncertainty Estimation Performance** in the paper.):
+**This script evaluates the uncertainty estimation performance of the TrustworthyCPI model on the C.elegans and Human
+datasets.**
+
+(For the detailed description of this
+experiment, please refer to **4.4 Uncertainty Estimation Performance** in the paper.)
+
+- Run the script [uncertainty_evaluation.py](uncertainty_estimation_expirement/uncertainty_evaluation.py) to filter out
+  the trustworthy
+  prediction datapoints and only give the prediction results for them.
+- Models and Datasets:
+    - Two models trained using Hunam and C.elegans have been saved in the `/results` folder.
+    - The test data is saved under the name `test_IndexVec_data.npy` in the corresponding `/data` folder (this is a data
+      format that the model can directly input).
+- Uncertainty Estimation Process:
+    - (1) The model predicts the entire dataset.
+    - (2) Use `0.1, 0.15, ..., 0.95` as uncertainty thresholds for filtering.
+    - (3) Evaluate the proportion and accuracy of the filtered data points and prediction accuracy.
+- Note: The ratio of positive to negative sample points for all data is 1:5.
 
 <details>
   <summary>Click here for the results!</summary>
@@ -167,24 +227,24 @@ Trustworthy Drug Discovery Result for SARS-CoV2 3CL Protease
 +---------------------+-------------------------------+--------------------+--------------------+
 |      threshold      | Number of filtered datapoints |     Proportion     |        ACC         |
 +---------------------+-------------------------------+--------------------+--------------------+
-|         0.1         |              2989             | 0.7393024981449419 | 0.9899632334709167 |
-| 0.15000000000000002 |              3409             | 0.8431857531535988 | 0.9873862862586975 |
-| 0.20000000000000004 |              3622             | 0.8958694039079891 | 0.9839867353439331 |
-| 0.25000000000000006 |              3752             | 0.928023744744002  | 0.9813433289527893 |
-| 0.30000000000000004 |              3831             | 0.9475636903289636 | 0.9793787002563477 |
-|  0.3500000000000001 |              3869             | 0.9569626514964136 | 0.9769966006278992 |
-| 0.40000000000000013 |              3898             | 0.964135542913678  | 0.9753720164299011 |
-| 0.45000000000000007 |              3923             | 0.9703190699975266 | 0.975019097328186  |
-|  0.5000000000000001 |              3939             | 0.9742765273311897 | 0.9743589758872986 |
-|  0.5500000000000002 |              3956             | 0.9784813257482068 | 0.9734580516815186 |
-|  0.6000000000000002 |              3971             | 0.9821914419985159 | 0.9728027582168579 |
-|  0.6500000000000001 |              3980             | 0.9844175117487015 | 0.9721105694770813 |
-|  0.7000000000000002 |              3989             | 0.986643581498887  | 0.9709200263023376 |
-|  0.7500000000000002 |              4001             | 0.9896116744991343 | 0.9702574610710144 |
-|  0.8000000000000002 |              4009             | 0.9915904031659659 | 0.9695684909820557 |
-|  0.8500000000000002 |              4020             | 0.9943111550828593 | 0.9681592583656311 |
-|  0.9000000000000002 |              4043             |        1.0         | 0.9661142826080322 |
-|  0.9500000000000003 |              4043             |        1.0         | 0.9661142826080322 |
+|         0.1         |              2971             | 0.7348503586445708 | 0.989902389767755  |
+| 0.15000000000000002 |              3392             | 0.8389809547365817 | 0.9867334905660378 |
+| 0.20000000000000004 |              3610             | 0.8929013109077418 | 0.9831024930747922 |
+| 0.25000000000000006 |              3743             | 0.9257976749938165 | 0.9799625968474486 |
+| 0.30000000000000004 |              3824             | 0.945832302745486  | 0.9769874476987448 |
+|  0.3500000000000001 |              3865             | 0.9559732871629978 | 0.9759379042690814 |
+| 0.40000000000000013 |              3893             | 0.9628988374969082 | 0.9740559979450295 |
+| 0.45000000000000007 |              3917             | 0.9688350234974029 | 0.9719172836354353 |
+|  0.5000000000000001 |              3937             | 0.9737818451644819 | 0.9700279400558801 |
+|  0.5500000000000002 |              3954             | 0.9779866435814989 | 0.9668689934243804 |
+|  0.6000000000000002 |              3970             | 0.981944100915162  | 0.9659949622166247 |
+|  0.6500000000000001 |              3978             | 0.9839228295819936 | 0.9650578179989945 |
+|  0.7000000000000002 |              3986             | 0.9859015582488251 | 0.9628700451580532 |
+|  0.7500000000000002 |              3998             | 0.9888696512490724 | 0.9619809904952477 |
+|  0.8000000000000002 |              4006             | 0.990848379915904  | 0.9610584123814279 |
+|  0.8500000000000002 |              4018             | 0.9938164729161514 | 0.9599303135888502 |
+|  0.9000000000000002 |              4043             |        1.0         | 0.9599307444966609 |
+|  0.9500000000000003 |              4043             |        1.0         | 0.9599307444966609 |
 +---------------------+-------------------------------+--------------------+--------------------+
 
 ```
@@ -193,11 +253,22 @@ Trustworthy Drug Discovery Result for SARS-CoV2 3CL Protease
 
 ## (c) OOD (Out-Of-Distribution) Detection
 
-- Run the script **"uncertainty_estimation_expirement/OOD_detection_evaluation.py"** to to evaluate the OOD data
-  detection capability of the TrustworthyCPI model. Intuitively, the prediction uncertainty u of OOD data should be higher than
-  that of ID (In Distribution) data. For example, when we train the model on C.elegans, the uncertainty u of C.elegans
-  test datapoints should be lower than that of Human's test datapoints in general (For the detailed description of this
-  experiment, please refer to **4.5 OOD (Out-Of-Distribution) Detection** in the paper).
+**This script evaluates the OOD data
+detection capability of the TrustworthyCPI model.**
+
+(For the detailed description of this
+experiment, please refer to **4.5 OOD (Out-Of-Distribution) Detection** in the paper)
+
+- Run the script [OOD_detection_evaluation.py](uncertainty_estimation_expirement/OOD_detection_evaluation.py) to to
+  evaluate the OOD datapoints.
+- The model and dataset used are consistent with those in **[(b) Uncertainty estimation](#b-uncertainty-estimation).**
+- The only difference is:
+    - The Human testing set is used to test the model trained on C.elegans.
+    - Conversely, the C.elegans testing set is used to test the model trained on Human.
+- Intuitively, the prediction uncertainty u of OOD data should be higher than
+  that of ID (In Distribution) data.
+- For example, when we train the model on C.elegans, the uncertainty u of C.elegans
+  test datapoints should be lower than that of Human in general .
 
 <details>
   <summary>Click here for the results!</summary>
@@ -248,55 +319,51 @@ Trustworthy Drug Discovery Result for SARS-CoV2 3CL Protease
 |  0.9500000000000003 |              4043              |        1.0         | 0.8501113057136536 |
 +---------------------+--------------------------------+--------------------+--------------------+
 -------------------- Human->Human (In Distribution) --------------------
-+---------------------+--------------------------------+--------------------+--------------------+
-|      threshold      | Number of filtered data points |     Proportion     |        ACC         |
-+---------------------+--------------------------------+--------------------+--------------------+
-|         0.1         |              2989              | 0.7393024981449419 | 0.9899632334709167 |
-| 0.15000000000000002 |              3409              | 0.8431857531535988 | 0.9873862862586975 |
-| 0.20000000000000004 |              3622              | 0.8958694039079891 | 0.9839867353439331 |
-| 0.25000000000000006 |              3752              | 0.928023744744002  | 0.9813433289527893 |
-| 0.30000000000000004 |              3831              | 0.9475636903289636 | 0.9793787002563477 |
-|  0.3500000000000001 |              3869              | 0.9569626514964136 | 0.9769966006278992 |
-| 0.40000000000000013 |              3898              | 0.964135542913678  | 0.9753720164299011 |
-| 0.45000000000000007 |              3923              | 0.9703190699975266 | 0.975019097328186  |
-|  0.5000000000000001 |              3939              | 0.9742765273311897 | 0.9743589758872986 |
-|  0.5500000000000002 |              3956              | 0.9784813257482068 | 0.9734580516815186 |
-|  0.6000000000000002 |              3971              | 0.9821914419985159 | 0.9728027582168579 |
-|  0.6500000000000001 |              3980              | 0.9844175117487015 | 0.9721105694770813 |
-|  0.7000000000000002 |              3989              | 0.986643581498887  | 0.9709200263023376 |
-|  0.7500000000000002 |              4001              | 0.9896116744991343 | 0.9702574610710144 |
-|  0.8000000000000002 |              4009              | 0.9915904031659659 | 0.9695684909820557 |
-|  0.8500000000000002 |              4020              | 0.9943111550828593 | 0.9681592583656311 |
-|  0.9000000000000002 |              4043              |        1.0         | 0.9661142826080322 |
-|  0.9500000000000003 |              4043              |        1.0         | 0.9661142826080322 |
-+---------------------+--------------------------------+--------------------+--------------------+
++---------------------+-------------------------------+--------------------+--------------------+
+|      threshold      | Number of filtered datapoints |     Proportion     |        ACC         |
++---------------------+-------------------------------+--------------------+--------------------+
+|         0.1         |              2971             | 0.7348503586445708 | 0.989902389767755  |
+| 0.15000000000000002 |              3392             | 0.8389809547365817 | 0.9867334905660378 |
+| 0.20000000000000004 |              3610             | 0.8929013109077418 | 0.9831024930747922 |
+| 0.25000000000000006 |              3743             | 0.9257976749938165 | 0.9799625968474486 |
+| 0.30000000000000004 |              3824             | 0.945832302745486  | 0.9769874476987448 |
+|  0.3500000000000001 |              3865             | 0.9559732871629978 | 0.9759379042690814 |
+| 0.40000000000000013 |              3893             | 0.9628988374969082 | 0.9740559979450295 |
+| 0.45000000000000007 |              3917             | 0.9688350234974029 | 0.9719172836354353 |
+|  0.5000000000000001 |              3937             | 0.9737818451644819 | 0.9700279400558801 |
+|  0.5500000000000002 |              3954             | 0.9779866435814989 | 0.9668689934243804 |
+|  0.6000000000000002 |              3970             | 0.981944100915162  | 0.9659949622166247 |
+|  0.6500000000000001 |              3978             | 0.9839228295819936 | 0.9650578179989945 |
+|  0.7000000000000002 |              3986             | 0.9859015582488251 | 0.9628700451580532 |
+|  0.7500000000000002 |              3998             | 0.9888696512490724 | 0.9619809904952477 |
+|  0.8000000000000002 |              4006             | 0.990848379915904  | 0.9610584123814279 |
+|  0.8500000000000002 |              4018             | 0.9938164729161514 | 0.9599303135888502 |
+|  0.9000000000000002 |              4043             |        1.0         | 0.9599307444966609 |
+|  0.9500000000000003 |              4043             |        1.0         | 0.9599307444966609 |
++---------------------+-------------------------------+--------------------+--------------------+
 -------------------- Human->Celegans (Out of Distribution) --------------------
-+---------------------+--------------------------------+--------------------+--------------------+
-|      threshold      | Number of filtered data points |     Proportion     |        ACC         |
-+---------------------+--------------------------------+--------------------+--------------------+
-|         0.1         |              1813              | 0.3859910581222057 | 0.9658024907112122 |
-| 0.15000000000000002 |              2672              | 0.568873749201618  | 0.9509730935096741 |
-| 0.20000000000000004 |              3115              | 0.6631892697466468 | 0.938683807849884  |
-| 0.25000000000000006 |              3410              | 0.7259953161592506 | 0.9237536787986755 |
-| 0.30000000000000004 |              3628              | 0.7724079199489036 | 0.9095920920372009 |
-|  0.3500000000000001 |              3782              | 0.8051948051948052 | 0.8955578804016113 |
-| 0.40000000000000013 |              3893              | 0.828826910794124  | 0.8872334957122803 |
-| 0.45000000000000007 |              4004              | 0.8524590163934426 | 0.8771228790283203 |
-|  0.5000000000000001 |              4110              | 0.8750266127315308 | 0.8688564300537109 |
-|  0.5500000000000002 |              4177              | 0.8892910368320205 | 0.8637778162956238 |
-|  0.6000000000000002 |              4237              | 0.9020651479667873 | 0.8567382097244263 |
-|  0.6500000000000001 |              4299              | 0.9152650628060464 | 0.8508955240249634 |
-|  0.7000000000000002 |              4359              | 0.9280391739408133 | 0.8458362221717834 |
-|  0.7500000000000002 |              4408              | 0.9384713647008729 | 0.8411978483200073 |
-|  0.8000000000000002 |              4460              | 0.9495422610176708 | 0.8369954824447632 |
-|  0.8500000000000002 |              4534              | 0.9652969980838834 | 0.835906445980072  |
-|  0.9000000000000002 |              4697              |        1.0         | 0.8337236642837524 |
-|  0.9500000000000003 |              4697              |        1.0         | 0.8337236642837524 |
-+---------------------+--------------------------------+--------------------+--------------------+
-
-Process finished with exit code 0
-
-
++---------------------+-------------------------------+---------------------+--------------------+
+|      threshold      | Number of filtered datapoints |      Proportion     |        ACC         |
++---------------------+-------------------------------+---------------------+--------------------+
+|         0.1         |              896              | 0.19076005961251863 | 0.9720982313156128 |
+| 0.15000000000000002 |              1985             | 0.42261017670853734 | 0.9682619571685791 |
+| 0.20000000000000004 |              2609             |  0.5554609325101129 | 0.9601380228996277 |
+| 0.25000000000000006 |              3022             |  0.6433893974877581 | 0.9487094283103943 |
+| 0.30000000000000004 |              3326             |  0.708111560570577  | 0.9326518177986145 |
+|  0.3500000000000001 |              3583             |  0.7628273365978284 | 0.9098520278930664 |
+| 0.40000000000000013 |              3757             |  0.7998722588886523 | 0.8972584009170532 |
+| 0.45000000000000007 |              3932             |  0.8371300830317224 | 0.8802136182785034 |
+|  0.5000000000000001 |              4067             |  0.8658718330849479 | 0.8701745271682739 |
+|  0.5500000000000002 |              4210             |  0.8963167979561422 | 0.8581947684288025 |
+|  0.6000000000000002 |              4352             |  0.9265488609750905 | 0.8481158018112183 |
+|  0.6500000000000001 |              4455             |  0.9484777517564403 | 0.8401795625686646 |
+|  0.7000000000000002 |              4526             |  0.9635937832659144 | 0.8340697884559631 |
+|  0.7500000000000002 |              4591             |  0.9774324036619119 | 0.8307557702064514 |
+|  0.8000000000000002 |              4632             |  0.9861613796040025 | 0.8296632170677185 |
+|  0.8500000000000002 |              4675             |  0.9953161592505855 | 0.8297325968742371 |
+|  0.9000000000000002 |              4697             |         1.0         | 0.8301043510437012 |
+|  0.9500000000000003 |              4697             |         1.0         | 0.8301043510437012 |
++---------------------+-------------------------------+---------------------+--------------------+
 
 ```
 
@@ -304,38 +371,98 @@ Process finished with exit code 0
 
 ## (d) Parameters Selection
 
-In the ablation experiment in our paper (please refer to **4.2 Factors of Influencing the Performance of Trustwor
-thyCPI** in the paper for the details), we found that when the feature learning module consists of 3-layer
-convolutional neural network, and the annealing coefficient of the regularized term is set to λ_t=min(1,t/3), the model can obtain
-the best uncertainty prediction performance. You can also try to adjust these two factors based on your own dataset to
-achieve better performance. For the detailed parameters of the feature learning module, please refer to the **Figure 4**
-of **3.2 Convolutional Representation Learning** in the paper.The pre-trained models with different convolution blocks
-and different annealing coefficients are saved in "
-/ablation_conv_models" and "/ablation_loss_models" folders, you can use them for the further researches. For the other
-hyper parameters related to optimizer etc., please refer to **(4.1 Experimental Setup)** in the paper。
+**This script run the ablation experiment in our paper.**
+
+(please refer to **4.2 Factors of Influencing the Performance of TrustworthyCPI** in the paper for the details),
+
+- we found that when the feature learning module consists of 3-layer convolutional neural network, and the annealing
+  coefficient of the regularized term is set to `λ_t=min(1,t/3)`, the model can obtain the best uncertainty prediction
+  performance. You can also try to adjust these two factors based on your own dataset to
+  achieve better performance.
+- For the detailed parameters of the feature learning module, please refer to **Section 3.2 Convolutional Representation
+  Learning** in the paper.
+- The pre-trained 1-layer and 2-layer convolutional neural network models are saved in the `/ablation_conv_models`
+  folder. you can use them for the further researches. Please refer
+  to [Ablation_model.py](ablation_conv_models%2FAblation_model.py) for the source files of its structure.
+- For the other hyperparameters related to optimization, please refer to **(4.1 Experimental Setup and Baselines)** in
+  the paper。
 
 <details>
   <summary>Click here for the detailed effect of the annealing coefficient!</summary>
 
 Effect of the different sizes of the annealing coefficient on the performance of uncertainty prediction
 
-| --------------------Human Dataset-------------------- |--------------------C.elegans Dataset--------------------|
-|:------:|:---------------------------------------------:|
-|![Alt](Figures/effect_of%20annealing_coefficient_on_Human.jpg) |![Alt](Figures/effect_of%20annealing_coefficient_on_Celegans.jpg) |
-
-
+|                        Human Dataset                         |                        C.elegans Dataset                        |
+|:------------------------------------------------------------:|:---------------------------------------------------------------:|
+| ![Alt](figures/effect_of_annealing_coefficient_on_Human.JPG) | ![Alt](figures/effect_of_annealing_coefficient_on_Celegans.JPG) |
 
 </details>
 
-## (e) Training of TrustworthyCPI Model using your customized CPI dataset and make trustworthy drug discoveries
+## (e) Training of trustworthyCPI model on benchmark datasets in an end-to-end manner
 
-**We recommend you to run "run_training.py" script to reproduce our experiment before attempting to train the TrustworthyCPI model
-using your own custom CPI dataset to familiarize yourself with the training and prediction processes of the TrustworthyCPI.**
+- **Step-1:** Execute the [run_training.py](run_training.py) script using the following command to train
+  the TrustworthyCPI model on the Human dataset. The results will be outputted to the `/result` directory.
+    ```bash
+    python run_training.py --dataset Human
+    ```
+
+- **Step-2:** Execute the [run_prediction.py](run_prediction.py) script to perform uncertainty prediction, which will
+  print the predictive performance on this dataset such as ACC, AUC, AUPRC, etc.
+
+    ```bash
+    python run_prediction.py --dataset Human
+    ```
+
+    - Note that due to enviroment differences, there may be some deviation in the results. We believe that the standard
+      deviation should be kept within `± 0.5 %` of the results reported in Table 4 and Table 5 in the paper.
+    - Please try to run `run_training.py` on your own instead of directly using our checkpoints to reproduce our
+      experiments. This may ensure the correctness of your experimental process.
+
+- **Step-3:** Check the `/result` directory, the prediction results for each data point will be saved
+  as `Human_output.csv`.
+    - `Label` column: the true label of the data point.
+    - `Probability` column: the predicted interacting score of the data point.
+    - `pred_label` column: the predicted label of the data point.
+    - `uncertainty` column: the uncertainty u of the data point. This is calculated by Eq. (3) in the paper.
+
+<details>
+  <summary>Click here for the results!</summary>
+Human_output.csv
+
+|   Pair   |  Label  |       Probability        |  Pred Label  |      Uncertainty       |
+|:--------:|:-------:|:------------------------:|:------------:|:----------------------:|
+|  Pair1   |    0    |  4.737482287740618e-26   |      0       |  0.03316105902194977   |
+|  Pair2   |    0    |  3.970345518784001e-22   |      0       |  0.03900306671857834   |
+|  Pair3   |    0    |  3.7335040614649984e-10  |      0       |  0.08435791730880737   |
+|  Pair4   |    0    |  3.6831488614552654e-07  |      0       |  0.11894617974758148   |
+|  Pair5   |    0    |  3.0627700198238017e-07  |      0       |  0.11765553057193756   |
+|  Pair6   |    0    |  1.1848506506847599e-15  |      0       |  0.054991647601127625  |
+|  Pair7   |    1    |    0.9999750852584839    |      1       |  0.15873946249485016   |
+|  Pair8   |    0    |  1.6332719046644362e-15  |      0       |  0.055481284856796265  |
+|  Pair9   |    0    |  2.8190175515370886e-15  |      0       |   0.056334238499403    |
+|  Pair10  |    0    |  4.239310271714203e-07   |      0       |  0.11994942277669907   |
+|  Pair11  |    0    |  1.9672363578138174e-06  |      0       |  0.13211017847061157   |
+|   ...    |   ...   |           ...            |     ...      |          ...           |
+
+</details>
+
+- **Step-4:** Train TrustworthyCPI on the unbalance datasets.
+    - Download the unbalanced datasets used in the experiment (Pos/Neg = 1:1, 1:3, 1:5) from [here](https://drive.google.com/file/d/1RVZ6ZtjOdJrlFIUCCasJhTWTtpsJZAZZ/view?usp=sharing).
+    - Unzip it to the `/unbalanced_data` folder.
+    - Modify the [run_training.py](run_training.py) and [run_prediction.py](run_prediction.py) scripts appropriately.
+    - Train and predict in the same way as Step 1~3.
+
+## (f) Training of TrustworthyCPI Model using your customized CPI dataset and make trustworthy drug discovery
+
+**We recommend you to run demo (e) to reproduce our experiment before attempting to train the TrustworthyCPI model
+using your own custom CPI dataset to familiarize yourself with the training and prediction processes of the
+TrustworthyCPI.**
 
 **- Step-1: Raw data format**
 
-Please refer to **"data/CelegansByStr/data.txt"** file to store your Compound-Protein pairs in rows according to the
-following format "(SMILES of Compound,Sequence of Protein,Interaction)" :
+  - Please refer to `data/CelegansByStr/data.txt` file to store your Compound-Protein pairs in rows according to the
+following format.
+  - (SMILES of Compound,Sequence of Protein,Interaction):
 
 ```
 CCNC(C)CC1=CC(=CC=C1)C(F)(F)F,MHRASLICRLASPSRINAIRNASSGKSHISASTLVQHRNQSVAAAVKHEPFLNGSSSIYIEQMYEAWLQDPSSVHTSWDAYFRNVEAGAGPGQAFQAPPATAYAGALGVSPAAAQVTTSSAPATRLDTNASVQSISDHLKIQLLIRSYQTRGHNIADLDPLGINSADLDDTIPPELELSFYGLGERDLDREFLLPPTTFISEKKSLTLREILQRLKDIYCTSTGVEYMHLNNLEQQDWIRRRFEAPRVTELSHDQKKVLFKRLIRSTKFEEFLAKKWPSEKRFGLEGCEVLIPAMKQVIDSSSTLGVDSFVIGMPHRGRLNVLANVCRQPLATILSQFSTLEPADEGSGDVKYHLGVCIERLNRQSQKNVKIAVVANPSHLEAVDPVVMGKVRAEAFYAGDEKCDRTMAILLHGDAAFAGQGVVLETFNLDDLPSYTTHGAIHIVVNNQIGFTTDPRSSRSSPYCTDVGRVVGCPIFHVNVDDPEAVMHVCNVAADWRKTFKKDVIVDLVCYRRHGHNELDEPMFTQPLMYQRIKQTKTALEKYQEKILNEGVANEQYVKEELTKYGSILEDAYENAQKVTYVRNRDWLDSPWDDFFKKRDPLKLPSTGIEQENIEQIIGKFSQYPEGFNLHRGLERTLKGRQQMLKDNSLDWACGEALAFGSLLKEGIHVRLSGQDVQRGTFSHRHHVLHDQKVDQKIYNPLNDLSEGQGEYTVCNSSLSEYAVLGFELGYSMVDPNSLVIWEAQFGDFSNTAQCIIDQFISSGQSKWIRQSGLVMLLPHGYEGMGPEHSSARPERFLQMCNEDDEIDLEKIAFEGTFEAQQLHDTNWIVANCTTPANIYHLLRRQVTMPFRKPAVVFSPKSLLRHPMARSPVEDFQSGSNFQRVIPETGAPSQNPPDVKRVVFCTGKVYYDMVAARKHVGKENDVALVRVEQLSPFPYDLVQQECRKYQGAEILWAQEEHKNMGAWSFVQPRINSLLSIDGRATKYAGRLPSSSPATGNKFTHMQEQKEMMSKVFGVPKSKLEGFKA,0
@@ -349,8 +476,8 @@ C1=CC=C2C(=C1)NC3=CC=CC=C3S2,MFARIVSRRAATGLFAGASSQCKMADRQVHTPLAKVQRHKYTNNENILVDH
 
 **- Step-2: Data preprocessing**
 
-Run file **"data/CelegansByStr/data_preprocess.py"** to convert the original data to Encoding Vector (please refer
-to **3.2 Convolutional Representation Learning** for the details).
+  - Run file [data_preprocess.py](data/CelegansByStr/data_preprocess.py) to convert the original data to Encoding Vector 
+  - Please refer to **Section 3.2 Convolutional Representation Learning** for the details).
 
 ```
 [   2   80   81  115  164  284  ...],[11.  9. 18.  1. 17. 12.  ...],0
@@ -363,38 +490,43 @@ to **3.2 Convolutional Representation Learning** for the details).
 
 **- Step-3: Encapsulate your own torch dataset**
 
-Refer to the file **"MyUtils/MyData.py"** and encapsulate your own dataset into the Class "torch.utils.data.Dataset"
+Refer to the file [MyData.py](MyUtils/MyData.py) and encapsulate your own dataset into the Class `torch.utils.data.Dataset`
 recommended by Pytorch.
 
 **- Step-4: Training**
 
-Run the file **"run_training.py"** to train and save your own TrustworthyCPI Model.
+Run the file [run_training.py](run_training.py) to train and save your own TrustworthyCPI Model.
 
 **- Step-5: Trustworthy Drug discovery**
 
-Store and preprocess your Compound-Protein pairs to be predicted as described above and use file **"
-drugs_trustworthy_predict.py"** for your own **trustworthy drug discovery**！
+  - Store and preprocess your Compound-Protein pairs to be predicted as described above.
+  - Use file 
+[drugs_trustworthy_predict.py](case_study%2Fdrugs_trustworthy_predict.py) for your own **trustworthy drug discovery**！
 
 ## Disclaimer
 
-Please manually verify the reliability of the results by experts before conducting further drug experiments. Do not
-directly use these drugs for disease treatment.
+- **_Please manually verify the reliability of the results by experts before conducting further drug experiments._**
+- **_Do not
+directly use these drugs for disease treatment._**
 
-##Thanks
+## Thanks
+
 Thanks for the support of the following repositories:
 
-| Source |                    Detail                     |
-|:------:|:---------------------------------------------:|
+|                             Source                              |                    Detail                     |
+|:---------------------------------------------------------------:|:---------------------------------------------:|
 | https://github.com/dougbrion/pytorch-classification-uncertainty |      Implement of Evidence Loss Function      |
-| https://github.com/hkmztrk/DeepDTA | Implement of Protein Character Encoding Table |
+|               https://github.com/hkmztrk/DeepDTA                | Implement of Protein Character Encoding Table |
 
-## Cite Us
+## Cite us
+
 If you found this work useful to you, please our paper:
+
 ```
 @article{XXX,
   title={TrustworthyCPI: Trustworthy Compound–Protein Interaction Prediction},
   author={XXX},
   journal={XXX},
-  year={2022}
+  year={2023}
 }
 ```
