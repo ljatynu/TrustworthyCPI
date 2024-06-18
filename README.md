@@ -520,7 +520,7 @@ Thanks for the support of the following repositories:
 
 ## Cite us
 
-If you found this work useful to you, please our paper:
+If you found this work useful to you, please cite our paper:
 
 ```
 @article{XXX,
