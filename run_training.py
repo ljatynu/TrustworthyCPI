@@ -15,12 +15,8 @@ if __name__ == '__main__':
     np.random.seed(222)
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset", type=str, default="Human", help="name of dataset", choices=['Human', 'Celegans'])
-    parser.add_argument(
-        "--num_classes", default=2, type=int, help="num_classes."
-    )
-    parser.add_argument(
-        "--epochs", default=100, type=int, help="Desired number of epochs."
-    )
+    parser.add_argument("--num_classes", default=2, type=int, help="num_classes.")
+    parser.add_argument("--epochs", default=100, type=int, help="Desired number of epochs.")
     args = parser.parse_args()
     num_epochs = args.epochs
 

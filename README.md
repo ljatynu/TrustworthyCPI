@@ -5,20 +5,15 @@ This code is an implementation of our paper
 Human and C.elegans created by
 "[Improving compound–protein interaction prediction by building up highly credible negative samples (Bioinformatics, 2015).](https://academic.oup.com/bioinformatics/article/31/12/i221/216307)"
 
-In our problem setting of TrustworthyCPI prediction, the input of our model is the pair of a SMILES format of compound
-and an amino acid sequence of protein and the outputs are not only a binary prediction result interaction but also the
-the confidence level of prediction result. The overview of our **TrustworthyCPI Model** is as follows:
+In our problem setting of TrustworthyCPI prediction, the input of our model is the pair of a SMILES format of compound and an amino acid sequence of protein and the outputs are not only a binary prediction result interaction but also the the confidence level of prediction result. The overview of our **TrustworthyCPI Model** is as follows:
 ![Alt](figures/framwork_of_TrustworthyCPI.JPG)
 
 The details of the TrustworthyCPI Model are described in our paper.
-
 ## Characteristics of the repository
 
-- We provide the **several demo-scripts** of the experiments in the paper, so that you can quickly understand the
-  trustworthy
+- We provide the **several demo-scripts** of the experiments in the paper, so that you can quickly understand the trustworthy
   prediction process of the TrustworthyCPI model.
-- This code is **easy to use**. It means that you can customize your own dataset and train your own TrustworthyCPI
-  prediction
+- This code is **easy to use**. It means that you can customize your own dataset and train your own TrustworthyCPI prediction
   model, and apply it to the new "trustworthy drug discovery" scenario.
 - We provide **several pre-training models** on Human and C.elegans datasets for your further researches.
 
@@ -30,8 +25,8 @@ The details of the TrustworthyCPI Model are described in our paper.
 - [(b) Uncertainty estimation](#b-uncertainty-estimation)
 - [(c) OOD (Out-Of-Distribution) Detection](#c-ood-out-of-distribution-detection)
 - [(d) Parameters Selection](#d-parameters-selection)
-- [(e) Training on Human and C.elegans Benchmark](#e-training-of-trustworthycpi-model-on-benchmark-datasets-in-an-end-to-end-manner)
-- [(f) Training using customized CPI dataset](#f-Training-of-TrustworthyCPI-Model-using-your-customized-CPI-dataset-and-make-trustworthy-drug-discovery)
+- [(e) Training on Human and C.elegans Benchmark](#e-training-of-trustworthycpi-model-on-benchmark-dataset-in-an-end-to-end-manner)
+- [(f) Training using customized CPI dataset](#f-Training-of-TrustworthyCPI-Model-using-your-customized-CPI-dataset-and-make-trustworthy-drug-discoveries)
 
 ## Requirements
 
@@ -42,39 +37,26 @@ The details of the TrustworthyCPI Model are described in our paper.
 - setuptools==65.4.0
 
 ## Data Preparation
-
-Due to the large size of the pre-processed dataset (~420MB), we have stored
-it [here](https://drive.google.com/file/d/1lE0fE0RTqP3ThxVorPhA9FMP9ZR6WiOC/view?usp=drive_link). Please download this
-zip file and extract it to the main directory as the `/data` folder.
-
+Due to the large size of the pre-processed dataset (~420MB), we have stored it [here](https://drive.google.com/file/d/1NeR7E_c_Lb8jpFGwqPfoKAoB9nmWZitd/view?usp=drive_link). Please download this zip file and extract it to the main directory as the `/data` folder.
 - The explanation for the file directory:
-    - The Human and C.elegans datasets are respectively saved in the `/CelegansByStr` and `/Human` directories.
-    - `data.txt` contains the SMILES sequences and their labels from the original dataset.
-    - `train.txt` and `test.txt` are random divisions of the dataset (Each of them has a ratio of pos:Neg = 1:5).
-    - `train_IndexVec_data.npy` (training set) and `train_IndexVec_data.npy` (testing set) store the pre-processed
-      Encoding Vector of C-P pairs (please refer to **Section 3.2 Convolutional Representation Learning** in the paper).
-    - The source code for data preprocessing can be found in
-      script [data_preprocess.py](data%2FCelegansByStr%2Fdata_preprocess.py).
+  - The Human and Celegans datasets are respectively saved in the `/CelegansByStr` and `/Human` directories. 
+  - `data.txt` contains the SMILES sequences and their labels from the original dataset.
+  - `train.txt` and `test.txt` are random divisions of the dataset (pos:Neg = 1:5).
+  - `train_IndexVec_data.npy` (training set) and `train_IndexVec_data.npy` (testing set) store the preprocessed Encoding Vector of C-P pairs (please refer to **Section 3.2 Convolutional Representation Learning** in the paper).
+  - The source code for data preprocessing can be found in script [data_preprocess.py](data%2FCelegansByStr%2Fdata_preprocess.py).
 
 ## (a) Case Study (Trustworthy drug discovery on SARS CoV2 3CLPro)
-
-**This script employs TrustworthyCPI to predict the SARS-CoV2 3CPro Protease and its existing 85 drugs, including 82
-antiviral drugs and 3 unrelated drugs.**
+**This script employs TrustworthyCPI to predict the SARS-CoV2 3CPro Protease and its existing 85 drugs, including 82 antiviral drugs and 3 unrelated drugs.**
 
 (For the detailed description of this experiment, please refer to **4.7 Case Study** in the paper.)
 
-- Run the script [drugs_trustworthy_predict.py](case_study/drugs_trustworthy_predict.py) for trustworthy drug discovery
-  on SARS CoV2 3CLPro.
+- Run the script [drugs_trustworthy_predict.py](case_study/drugs_trustworthy_predict.py) for trustworthy drug discovery on SARS CoV2 3CLPro.
 - Description of the `case_study` file directory:
-    - Antiviral drugs are stored in `antiviral_data/antiviral_drugs.txt`
-    - Unrelated drugs are stored in `antiviral_data/unrelated_drugs.txt`.
-    - One can also download the original antiviral drugs and unrelated ones using the
-      script [load_antiviral_drugs.py](case_study%2Fload_antiviral_drugs.py).
-    - We have combined all SMILES sequences of drugs and amino acid sequences of SARS-CoV2 3CPro Protease in the
-      file `antiviral_data/existing_drugs_3CLPro_pair.txt`, and then transformed them into Encoding Vectors using
-      the [data_helper.py](case_study/data_helper.py) script (please refer to "Section 3.2 Convolutional Representation
-      Learning" of the paper).
-    - A TrustworthyCPI model trained on the full C.elegans dataset is stored in `model_trained_on_Celegans.pth`.
+  - Antiviral drugs are stored in `antiviral_data/antiviral_drugs.txt`
+  - Unrelated drugs are stored in `antiviral_data/unrelated_drugs.txt`.
+  - One can also download the original antiviral drugs and unrelated ones using the script [load_antiviral_drugs.py](case_study%2Fload_antiviral_drugs.py).
+  - We have combined all SMILES sequences of drugs and amino acid sequences of SARS-CoV2 3CPro Protease in the file `antiviral_data/existing_drugs_3CLPro_pair.txt`, and then transformed them into Encoding Vectors using the [data_helper.py](case_study/data_helper.py) script (please refer to "Section 3.2 Convolutional Representation Learning" of the paper).
+  - A TrustworthyCPI model trained on the full C.elegans dataset is stored in `model_trained_on_Celegans.pth`.
 
 <details>
   <summary>Click here for the results!</summary>
@@ -176,24 +158,20 @@ Trustworthy Drug Discovery Result for SARS-CoV2 3CL Protease
 </details>
 
 ## (b) Uncertainty estimation
-
-**This script evaluates the uncertainty estimation performance of the TrustworthyCPI model on the C.elegans and Human
-datasets.**
+**This script evaluates the uncertainty estimation performance of the TrustworthyCPI model on the C.elegans and Human datasets.**
 
 (For the detailed description of this
-experiment, please refer to **4.4 Uncertainty Estimation Performance** in the paper.)
+  experiment, please refer to **4.4 Uncertainty Estimation Performance** in the paper.)
 
-- Run the script [uncertainty_evaluation.py](uncertainty_estimation_expirement/uncertainty_evaluation.py) to filter out
-  the trustworthy
+- Run the script [uncertainty_evaluation.py](uncertainty_estimation_experiment/uncertainty_evaluation.py) to filter out the trustworthy
   prediction datapoints and only give the prediction results for them.
 - Models and Datasets:
-    - Two models trained using Hunam and C.elegans have been saved in the `/results` folder.
-    - The test data is saved under the name `test_IndexVec_data.npy` in the corresponding `/data` folder (this is a data
-      format that the model can directly input).
+  - Two models trained using Hunam and C.elegans have been saved in the `results` folder.
+  - The test data is saved under the name `test_IndexVec_data.npy` in the corresponding `/data` folder (this is a data format that the model can directly input).
 - Uncertainty Estimation Process:
-    - (1) The model predicts the entire dataset.
-    - (2) Use `0.1, 0.15, ..., 0.95` as uncertainty thresholds for filtering.
-    - (3) Evaluate the proportion and accuracy of the filtered data points and prediction accuracy.
+  - (1) The model predicts the entire dataset.
+  - (2) Use `0.1, 0.15, ..., 0.95` as uncertainty thresholds for filtering.
+  - (3) Evaluate the proportion and accuracy of the filtered data points and prediction accuracy.
 - Note: The ratio of positive to negative sample points for all data is 1:5.
 
 <details>
@@ -254,17 +232,16 @@ experiment, please refer to **4.4 Uncertainty Estimation Performance** in the pa
 ## (c) OOD (Out-Of-Distribution) Detection
 
 **This script evaluates the OOD data
-detection capability of the TrustworthyCPI model.**
+  detection capability of the TrustworthyCPI model.**
 
 (For the detailed description of this
-experiment, please refer to **4.5 OOD (Out-Of-Distribution) Detection** in the paper)
+  experiment, please refer to **4.5 OOD (Out-Of-Distribution) Detection** in the paper)
 
-- Run the script [OOD_detection_evaluation.py](uncertainty_estimation_expirement/OOD_detection_evaluation.py) to to
-  evaluate the OOD datapoints.
+- Run the script [OOD_detection_evaluation.py](uncertainty_estimation_experiment/OOD_detection_evaluation.py) to to evaluate the OOD datapoints.
 - The model and dataset used are consistent with those in **[(b) Uncertainty estimation](#b-uncertainty-estimation).**
 - The only difference is:
-    - The Human testing set is used to test the model trained on C.elegans.
-    - Conversely, the C.elegans testing set is used to test the model trained on Human.
+  - The Human testing set is used to test the model derived from C.elegans.
+  - Conversely, the C.elegans testing set is used to test the model trained by Human.
 - Intuitively, the prediction uncertainty u of OOD data should be higher than
   that of ID (In Distribution) data.
 - For example, when we train the model on C.elegans, the uncertainty u of C.elegans
@@ -373,96 +350,60 @@ experiment, please refer to **4.5 OOD (Out-Of-Distribution) Detection** in the p
 
 **This script run the ablation experiment in our paper.**
 
-(please refer to **4.2 Factors of Influencing the Performance of TrustworthyCPI** in the paper for the details),
+(please refer to **4.2 Factors of Influencing the Performance of TrustworthyCPI** in the paper for the details), 
 
-- we found that when the feature learning module consists of 3-layer convolutional neural network, and the annealing
-  coefficient of the regularized term is set to `λ_t=min(1,t/3)`, the model can obtain the best uncertainty prediction
-  performance. You can also try to adjust these two factors based on your own dataset to
-  achieve better performance.
-- For the detailed parameters of the feature learning module, please refer to **Section 3.2 Convolutional Representation
-  Learning** in the paper.
-- The pre-trained 1-layer and 2-layer convolutional neural network models are saved in the `/ablation_conv_models`
-  folder. you can use them for the further researches. Please refer
-  to [Ablation_model.py](ablation_conv_models%2FAblation_model.py) for the source files of its structure.
-- For the other hyperparameters related to optimization, please refer to **(4.1 Experimental Setup and Baselines)** in
-  the paper。
+- we found that when the feature learning module consists of 3-layer convolutional neural network, and the annealing coefficient of the regularized term is set to `λ_t=min(1,t/3)`, the model can obtain the best uncertainty prediction performance. You can also try to adjust these two factors based on your own dataset to
+achieve better performance.
+- For the detailed parameters of the feature learning module, please refer to **Section 3.2 Convolutional Representation Learning** in the paper.
+- The pre-trained 1-layer and 2-layer convolutional neural network models are saved in the `/ablation_conv_models` folder. you can use them for the further researches. Please refer to [Ablation_model.py](ablation_conv_models%2FAblation_model.py) for the source files of its structure.
+- For the other hyperparameters related to optimization, please refer to **(4.1 Experimental Setup and Baselines)** in the paper。
 
 <details>
   <summary>Click here for the detailed effect of the annealing coefficient!</summary>
 
 Effect of the different sizes of the annealing coefficient on the performance of uncertainty prediction
 
-|                        Human Dataset                         |                        C.elegans Dataset                        |
-|:------------------------------------------------------------:|:---------------------------------------------------------------:|
-| ![Alt](figures/effect_of_annealing_coefficient_on_Human.JPG) | ![Alt](figures/effect_of_annealing_coefficient_on_Celegans.JPG) |
+| Human Dataset |C.elegans Dataset|
+|:------:|:---------------------------------------------:|
+|  ![Alt](figures/effect_of_annealing_coefficient_on_Human.JPG)   |![Alt](figures/effect_of_annealing_coefficient_on_Celegans.JPG) |
 
 </details>
 
 ## (e) Training of trustworthyCPI model on benchmark datasets in an end-to-end manner
-
-- **Step-1:** Execute the [run_training.py](run_training.py) script using the following command to train
-  the TrustworthyCPI model on the Human dataset. The results will be outputted to the `/result` directory.
+- **Step-1:** Execute the [run_training.py](run_training.py)run_training.py script using the following command to train the TrustworthyCPI model on the Human dataset. The results will be outputted to the `/result` directory.
     ```bash
     python run_training.py --dataset Human
     ```
-
-- **Step-2:** Execute the [run_prediction.py](run_prediction.py) script to perform uncertainty prediction, which will
-  print the predictive performance on this dataset such as ACC, AUC, AUPRC, etc.
+  
+- **Step-2:** Execute the [run_prediction.py](run_prediction.py) script to perform uncertainty prediction, which will print the predictive performance on this dataset such as ACC, AUC, AUPRC, etc. 
 
     ```bash
     python run_prediction.py --dataset Human
     ```
 
-    - Note that due to enviroment differences, there may be some deviation in the results. We believe that the standard
-      deviation should be kept within `± 0.5 %` of the results reported in Table 4 and Table 5 in the paper.
-    - Please try to run `run_training.py` on your own instead of directly using our checkpoints to reproduce our
-      experiments. This may ensure the correctness of your experimental process.
+  - Note that due to enviroment differences, there may be some deviation in the results. We believe that the standard deviation should be kept within `± 0.5 %` of the results reported in Table.4 and Table 5 in the paper.
+  - Please try to run `run_training.py` on your own instead of directly using our checkpoints to replicate our experiment. This may ensure the correctness of your experimental process.
 
-- **Step-3:** Check the `/result` directory, the prediction results for each data point will be saved
-  as `Human_output.csv`.
-    - `Label` column: the true label of the data point.
-    - `Probability` column: the predicted interacting score of the data point.
-    - `pred_label` column: the predicted label of the data point.
-    - `uncertainty` column: the uncertainty u of the data point. This is calculated by Eq. (3) in the paper.
+- **Step-3:** Check the `/result` directory, the prediction results for each data point will be saved as `Human_output.csv`.
+  - `Label` column: the true label of the data point.
+  - `Probability` column: the predicted interacting score of the data point.
+  - `pred_label` column: the predicted label of the data point.
+  - `uncertainty` column: the uncertainty u of the data point. This is calculated by Eq. (3) in the paper.
+- **Step-4:** Train TrustworthyCPI on the unbalance dataset.
+  - Download the unbalanced data (Pos : Neg = 1 : 1, 1 : 3, 1 : 5) experiment scripts  from [here](https://drive.google.com/file/d/1QnbXZS9SZcHZzrLpNWLK415QouF69lmd/view?usp=sharing).
+  - Unzip it to the `/unbalanced_data_experiment` folder. 
+  - Run the script [Unbalanced_data_experiment/performance_evaluation.py](Unbalanced_data_experiment%2Fperformance_evaluation.py) to quickly reproduce the experimental results in Tables 4 and 5 in the paper.
+  - Train the TrustworthyCPI model on the unbalanced dataset using the script [Unbalanced_data_experiment/run_training.py](Unbalanced_data_experiment%2Frun_training.py). Change the hyperparameter `--ratio` for different ratios of negative samples.
 
-<details>
-  <summary>Click here for the results!</summary>
-Human_output.csv
-
-|   Pair   |  Label  |       Probability        |  Pred Label  |      Uncertainty       |
-|:--------:|:-------:|:------------------------:|:------------:|:----------------------:|
-|  Pair1   |    0    |  4.737482287740618e-26   |      0       |  0.03316105902194977   |
-|  Pair2   |    0    |  3.970345518784001e-22   |      0       |  0.03900306671857834   |
-|  Pair3   |    0    |  3.7335040614649984e-10  |      0       |  0.08435791730880737   |
-|  Pair4   |    0    |  3.6831488614552654e-07  |      0       |  0.11894617974758148   |
-|  Pair5   |    0    |  3.0627700198238017e-07  |      0       |  0.11765553057193756   |
-|  Pair6   |    0    |  1.1848506506847599e-15  |      0       |  0.054991647601127625  |
-|  Pair7   |    1    |    0.9999750852584839    |      1       |  0.15873946249485016   |
-|  Pair8   |    0    |  1.6332719046644362e-15  |      0       |  0.055481284856796265  |
-|  Pair9   |    0    |  2.8190175515370886e-15  |      0       |   0.056334238499403    |
-|  Pair10  |    0    |  4.239310271714203e-07   |      0       |  0.11994942277669907   |
-|  Pair11  |    0    |  1.9672363578138174e-06  |      0       |  0.13211017847061157   |
-|   ...    |   ...   |           ...            |     ...      |          ...           |
-
-</details>
-
-- **Step-4:** Train TrustworthyCPI on the unbalance datasets.
-    - Download the unbalanced datasets used in the experiment (Pos/Neg = 1:1, 1:3, 1:5) from [here](https://drive.google.com/file/d/1RVZ6ZtjOdJrlFIUCCasJhTWTtpsJZAZZ/view?usp=sharing).
-    - Unzip it to the `/unbalanced_data` folder.
-    - Modify the [run_training.py](run_training.py) and [run_prediction.py](run_prediction.py) scripts appropriately.
-    - Train and predict in the same way as Step 1~3.
-
-## (f) Training of TrustworthyCPI Model using your customized CPI dataset and make trustworthy drug discovery
+## (f) Training of TrustworthyCPI Model using your customized CPI dataset and make trustworthy drug discoveries
 
 **We recommend you to run demo (e) to reproduce our experiment before attempting to train the TrustworthyCPI model
-using your own custom CPI dataset to familiarize yourself with the training and prediction processes of the
-TrustworthyCPI.**
+using your own custom CPI dataset to familiarize yourself with the training and prediction processes of the TrustworthyCPI.**
 
 **- Step-1: Raw data format**
 
-  - Please refer to `data/CelegansByStr/data.txt` file to store your Compound-Protein pairs in rows according to the
-following format.
-  - (SMILES of Compound,Sequence of Protein,Interaction):
+Please refer to **"data/CelegansByStr/data.txt"** file to store your Compound-Protein pairs in rows according to the
+following format "(SMILES of Compound,Sequence of Protein,Interaction)" :
 
 ```
 CCNC(C)CC1=CC(=CC=C1)C(F)(F)F,MHRASLICRLASPSRINAIRNASSGKSHISASTLVQHRNQSVAAAVKHEPFLNGSSSIYIEQMYEAWLQDPSSVHTSWDAYFRNVEAGAGPGQAFQAPPATAYAGALGVSPAAAQVTTSSAPATRLDTNASVQSISDHLKIQLLIRSYQTRGHNIADLDPLGINSADLDDTIPPELELSFYGLGERDLDREFLLPPTTFISEKKSLTLREILQRLKDIYCTSTGVEYMHLNNLEQQDWIRRRFEAPRVTELSHDQKKVLFKRLIRSTKFEEFLAKKWPSEKRFGLEGCEVLIPAMKQVIDSSSTLGVDSFVIGMPHRGRLNVLANVCRQPLATILSQFSTLEPADEGSGDVKYHLGVCIERLNRQSQKNVKIAVVANPSHLEAVDPVVMGKVRAEAFYAGDEKCDRTMAILLHGDAAFAGQGVVLETFNLDDLPSYTTHGAIHIVVNNQIGFTTDPRSSRSSPYCTDVGRVVGCPIFHVNVDDPEAVMHVCNVAADWRKTFKKDVIVDLVCYRRHGHNELDEPMFTQPLMYQRIKQTKTALEKYQEKILNEGVANEQYVKEELTKYGSILEDAYENAQKVTYVRNRDWLDSPWDDFFKKRDPLKLPSTGIEQENIEQIIGKFSQYPEGFNLHRGLERTLKGRQQMLKDNSLDWACGEALAFGSLLKEGIHVRLSGQDVQRGTFSHRHHVLHDQKVDQKIYNPLNDLSEGQGEYTVCNSSLSEYAVLGFELGYSMVDPNSLVIWEAQFGDFSNTAQCIIDQFISSGQSKWIRQSGLVMLLPHGYEGMGPEHSSARPERFLQMCNEDDEIDLEKIAFEGTFEAQQLHDTNWIVANCTTPANIYHLLRRQVTMPFRKPAVVFSPKSLLRHPMARSPVEDFQSGSNFQRVIPETGAPSQNPPDVKRVVFCTGKVYYDMVAARKHVGKENDVALVRVEQLSPFPYDLVQQECRKYQGAEILWAQEEHKNMGAWSFVQPRINSLLSIDGRATKYAGRLPSSSPATGNKFTHMQEQKEMMSKVFGVPKSKLEGFKA,0
@@ -476,8 +417,8 @@ C1=CC=C2C(=C1)NC3=CC=CC=C3S2,MFARIVSRRAATGLFAGASSQCKMADRQVHTPLAKVQRHKYTNNENILVDH
 
 **- Step-2: Data preprocessing**
 
-  - Run file [data_preprocess.py](data/CelegansByStr/data_preprocess.py) to convert the original data to Encoding Vector 
-  - Please refer to **Section 3.2 Convolutional Representation Learning** for the details).
+Run file **"data/CelegansByStr/data_preprocess.py"** to convert the original data to Encoding Vector (please refer
+to **3.2 Convolutional Representation Learning** for the details).
 
 ```
 [   2   80   81  115  164  284  ...],[11.  9. 18.  1. 17. 12.  ...],0
@@ -490,38 +431,33 @@ C1=CC=C2C(=C1)NC3=CC=CC=C3S2,MFARIVSRRAATGLFAGASSQCKMADRQVHTPLAKVQRHKYTNNENILVDH
 
 **- Step-3: Encapsulate your own torch dataset**
 
-Refer to the file [MyData.py](MyUtils/MyData.py) and encapsulate your own dataset into the Class `torch.utils.data.Dataset`
+Refer to the file **"MyUtils/MyData.py"** and encapsulate your own dataset into the Class "torch.utils.data.Dataset"
 recommended by Pytorch.
 
 **- Step-4: Training**
 
-Run the file [run_training.py](run_training.py) to train and save your own TrustworthyCPI Model.
+Run the file **"run_training.py"** to train and save your own TrustworthyCPI Model.
 
 **- Step-5: Trustworthy Drug discovery**
 
-  - Store and preprocess your Compound-Protein pairs to be predicted as described above.
-  - Use file 
-[drugs_trustworthy_predict.py](case_study%2Fdrugs_trustworthy_predict.py) for your own **trustworthy drug discovery**！
+Store and preprocess your Compound-Protein pairs to be predicted as described above and use file **"
+drugs_trustworthy_predict.py"** for your own **trustworthy drug discovery**！
 
 ## Disclaimer
 
-- **_Please manually verify the reliability of the results by experts before conducting further drug experiments._**
-- **_Do not
-directly use these drugs for disease treatment._**
+Please manually verify the reliability of the results by experts before conducting further drug experiments. Do not
+directly use these drugs for disease treatment.
 
 ## Thanks
-
 Thanks for the support of the following repositories:
 
-|                             Source                              |                    Detail                     |
-|:---------------------------------------------------------------:|:---------------------------------------------:|
+| Source |                    Detail                     |
+|:------:|:---------------------------------------------:|
 | https://github.com/dougbrion/pytorch-classification-uncertainty |      Implement of Evidence Loss Function      |
-|               https://github.com/hkmztrk/DeepDTA                | Implement of Protein Character Encoding Table |
+| https://github.com/hkmztrk/DeepDTA | Implement of Protein Character Encoding Table |
 
-## Cite us
-
-If you found this work useful to you, please cite our paper:
-
+## Cite Us
+If you found this work useful to you, please our paper:
 ```
 @article{XXX,
   title={TrustworthyCPI: Trustworthy Compound–Protein Interaction Prediction},
