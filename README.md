@@ -390,7 +390,7 @@ Effect of the different sizes of the annealing coefficient on the performance of
   - `pred_label` column: the predicted label of the data point.
   - `uncertainty` column: the uncertainty u of the data point. This is calculated by Eq. (3) in the paper.
 - **Step-4:** Train TrustworthyCPI on the unbalance dataset.
-  - Download the unbalanced data (Pos : Neg = 1 : 1, 1 : 3, 1 : 5) experiment scripts  from [here](https://drive.google.com/file/d/1QnbXZS9SZcHZzrLpNWLK415QouF69lmd/view?usp=sharing).
+  - Download the unbalanced data (Pos : Neg = 1 : 1, 1 : 3, 1 : 5) experiment scripts  from [here](https://drive.google.com/file/d/110kKK3Bn5SXv4rh2cTqo7JNITNWKhkOC/view?usp=sharing).
   - Unzip it to the `/unbalanced_data_experiment` folder. 
   - Run the script [Unbalanced_data_experiment/performance_evaluation.py](Unbalanced_data_experiment%2Fperformance_evaluation.py) to quickly reproduce the experimental results in Tables 4 and 5 in the paper.
   - Train the TrustworthyCPI model on the unbalanced dataset using the script [Unbalanced_data_experiment/run_training.py](Unbalanced_data_experiment%2Frun_training.py). Change the hyperparameter `--ratio` for different ratios of negative samples.
