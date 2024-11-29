@@ -25,7 +25,7 @@ The details of the TrustworthyCPI Model are described in our paper.
 - [(b) Uncertainty estimation](#b-uncertainty-estimation)
 - [(c) OOD (Out-Of-Distribution) Detection](#c-ood-out-of-distribution-detection)
 - [(d) Parameters Selection](#d-parameters-selection)
-- [(e) Training on Human and C.elegans Benchmark](#e-training-of-trustworthycpi-model-on-benchmark-dataset-in-an-end-to-end-manner)
+- [(e) Training on Human and C.elegans Benchmark](#e-training-of-trustworthycpi-model-on-benchmark-datasets-in-an-end-to-end-manner)
 - [(f) Training using customized CPI dataset](#f-Training-of-TrustworthyCPI-Model-using-your-customized-CPI-dataset-and-make-trustworthy-drug-discoveries)
 
 ## Requirements
