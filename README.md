@@ -1,7 +1,7 @@
 # TrustworthyCPI: Trustworthy Compound–Protein Interaction Prediction
 
 This code is an implementation of our paper
-" Trustworthy Compound–Protein Interaction Prediction" in PyTorch. In this repository, we provide two CPI datasets:
+"[Trustworthy Compound–Protein Interaction Prediction](https://ieeexplore.ieee.org/document/10848291)" in PyTorch. In this repository, we provide two CPI datasets:
 Human and C.elegans created by
 "[Improving compound–protein interaction prediction by building up highly credible negative samples (Bioinformatics, 2015).](https://academic.oup.com/bioinformatics/article/31/12/i221/216307)"
 
@@ -456,12 +456,13 @@ Thanks for the support of the following repositories:
 | https://github.com/hkmztrk/DeepDTA | Implement of Protein Character Encoding Table |
 
 ## Cite Us
-If you found this work useful to you, please our paper:
+If you found this work useful to you, please cite our paper:
 ```
-@article{XXX,
-  title={TrustworthyCPI: Trustworthy Compound–Protein Interaction Prediction},
-  author={XXX},
-  journal={XXX},
-  year={2023}
+@article{wen2025trustworthycpi,
+  title={TrustworthyCPI: Trustworthy Compound--Protein Interaction Prediction},
+  author={Wen, Chaoyu and Cai, Li and Li, Chunyan and Li, Jin},
+  journal={IEEE Transactions on Computational Biology and Bioinformatics},
+  year={2025},
+  publisher={IEEE}
 }
 ```
